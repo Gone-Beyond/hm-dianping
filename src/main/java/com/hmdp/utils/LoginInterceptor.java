@@ -13,30 +13,22 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        HttpSession session = request.getSession(false);
+        if (UserHolder.getUser() == null) {
 
-        if (session == null) {
             response.setStatus(401);
+
             return false;
+
         }
 
-        UserDTO user = (UserDTO) session.getAttribute("user");
 
-        if (user == null) {
-            response.setStatus(401);
-            return false;
-        }
 
-        UserHolder.saveUser(user);
+
+
 
 
         return true;
-
     }
 
-    @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
 
-        UserHolder.removeUser();
-    }
 }
