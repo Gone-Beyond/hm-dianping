@@ -1,20 +1,19 @@
 package com.hmdp.service.impl;
 
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.hmdp.dto.Result;
 import com.hmdp.entity.Shop;
 import com.hmdp.mapper.ShopMapper;
 import com.hmdp.service.IShopService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmdp.utils.CacheClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.hmdp.utils.RedisConstants.*;
+import static com.hmdp.utils.RedisConstants.CACHE_SHOP_KEY;
+import static com.hmdp.utils.RedisConstants.CACHE_SHOP_TTL;
+import static com.hmdp.utils.RedisConstants.LOCK_SHOP_KEY;
 
 /**
  * <p>
@@ -28,64 +27,60 @@ import static com.hmdp.utils.RedisConstants.*;
 public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IShopService {
 
     private final StringRedisTemplate stringRedisTemplate;
+    private final CacheClient cacheClient;
 
-    public ShopServiceImpl(StringRedisTemplate stringRedisTemplate) {
+    public ShopServiceImpl(StringRedisTemplate stringRedisTemplate, CacheClient cacheClient) {
         this.stringRedisTemplate = stringRedisTemplate;
+        this.cacheClient = cacheClient;
     }
+
 
     @Override
     public Result queryById(Long id) {
 
-        // 1. 组装商铺缓存 key：一个商铺 id 对应 Redis 里的一个 hash。
-        // 后续如果要统一 key 前缀，可以替换成 RedisConstants.CACHE_SHOP_KEY + id。
-        String shopKey = CACHE_SHOP_KEY + id;
+        Shop shop = cacheClient.queryWithPassThrough(
+                CACHE_SHOP_KEY,
+                id,
+                Shop.class,
+                this::getById,
+                CACHE_SHOP_TTL,
+                TimeUnit.MINUTES
+        );
 
-        ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
-
-        Result isCached = queryShopResultFromCache(valueOperations, shopKey);
-        if (isCached != null) {
-            return isCached;
-        }
-
-        Shop shop = getById(id);
-
-        // 解决缓存穿透
         if (shop == null) {
-            valueOperations.set(shopKey,
-                    "",
-                    CACHE_NULL_TTL,
-                    TimeUnit.MINUTES);
             return Result.fail("店铺不存在");
         }
 
-        String shopJson = JSONUtil.toJsonStr(shop);
-
-        // 解决缓存雪崩
-        valueOperations.set(shopKey, shopJson, CACHE_SHOP_TTL + RandomUtil.randomLong(1, 11), TimeUnit.MINUTES);
         return Result.ok(shop);
 
-
     }
 
 
-    // 判断店铺到底缓存了吗  包括缓存穿透
-    private static Result queryShopResultFromCache(ValueOperations<String, String> valueOperations, String shopKey) {
-        String shopJson = valueOperations.get(shopKey);
-
-        if (StrUtil.isNotBlank(shopJson)) {
-
-            Shop shop = JSONUtil.toBean(shopJson, Shop.class);
-
-            return Result.ok(shop);
-        }
-
-
-        if (shopJson != null) {
-            return Result.fail("店铺不存在");
-        }
-        return null;
+    private Shop queryWithLogicalExpire(Long id) {
+        return cacheClient.queryWithLogicalExpire(
+                CACHE_SHOP_KEY,
+                LOCK_SHOP_KEY,
+                id,
+                Shop.class,
+                this::getById,
+                CACHE_SHOP_TTL,
+                TimeUnit.MINUTES
+        );
     }
 
+
+
+    // 也是异步重建缓存的时候会用的
+    //逻辑过期的预热方法 ---先加入redis 保证一定有
+    public void saveShopWithLogicalExpire(Long id, Long expireSeconds) {
+        Shop shop = getById(id);
+        cacheClient.setWithLogicalExpire(
+                CACHE_SHOP_KEY + id,
+                shop,
+                expireSeconds,
+                TimeUnit.SECONDS
+        );
+    }
     @Override
     public Result update(Shop shop) {
 
@@ -106,4 +101,5 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements IS
 
         return Result.ok();
     }
+
 }
