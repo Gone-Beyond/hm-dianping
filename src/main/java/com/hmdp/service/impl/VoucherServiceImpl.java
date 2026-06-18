@@ -67,9 +67,15 @@ public class VoucherServiceImpl extends ServiceImpl<VoucherMapper, Voucher> impl
                 .registerSynchronization(new TransactionSynchronization() {
                     @Override
                     public void afterCommit() {
+                        // 1. 缓存库存
                         stringRedisTemplate.opsForValue().set(
                                 SECKILL_STOCK_KEY + voucher.getId(),
                                 voucher.getStock().toString()
+                        );
+                        // 2. 缓存秒杀券基本信息（用于前台时间校验）
+                        stringRedisTemplate.opsForValue().set(
+                                "seckill:voucher:" + voucher.getId(),
+                                cn.hutool.json.JSONUtil.toJsonStr(seckillVoucher)
                         );
                     }
                 });
