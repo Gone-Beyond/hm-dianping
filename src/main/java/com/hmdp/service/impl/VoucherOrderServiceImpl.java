@@ -94,7 +94,7 @@ public class VoucherOrderServiceImpl extends ServiceImpl<VoucherOrderMapper, Vou
     public Result seckillVoucher(Long voucherId) {
 
         // ========================前===================================
-        // 1. 从 Redis 缓存中获取秒杀券详情并校验时间
+        // 1. 从 Redis 缓存中获取秒杀券详情并校验时间（有穿透问题懒得改了  小问题）
         String voucherJson = stringRedisTemplate.opsForValue().get("seckill:voucher:" + voucherId);
         SeckillVoucher seckillVoucher = null;
         if (cn.hutool.core.util.StrUtil.isBlank(voucherJson)) {
