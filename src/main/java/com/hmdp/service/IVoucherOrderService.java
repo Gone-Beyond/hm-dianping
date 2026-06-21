@@ -16,8 +16,8 @@ public interface IVoucherOrderService extends IService<VoucherOrder> {
 
     Result seckillVoucher(Long voucherId);
 
-    // 没用了  原来不是异步的时候有用
-    //Result createVoucherOrder(Long voucherId);
+    // 没用了 原来不是异步的时候有用
+    // Result createVoucherOrder(Long voucherId);
 
     void handleVoucherOrder(VoucherOrder voucherOrder);
 

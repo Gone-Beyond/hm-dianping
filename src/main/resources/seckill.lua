@@ -1,10 +1,17 @@
 -- 1. 参数列表
--- 1.1. 优惠券库存key（如 seckill:stock:10）
+-- 1.1. 优惠券库存key
 local stockKey = KEYS[1]
--- 1.2. 订单key（已购用户集合，如 seckill:order:10）
+-- 1.2. 订单key（已购用户集合）
 local orderKey = KEYS[2]
--- 1.3. 用户id
+-- 1.3. 消息队列key
+local streamKey = KEYS[3]
+
+-- 1.4. 用户id
 local userId = ARGV[1]
+-- 1.5. 优惠券id
+local voucherId = ARGV[2]
+-- 1.6. 订单id（由Java端提前生成并传进来）
+local orderId = ARGV[3]
 
 -- 2. 执行脚本
 -- 2.1. 判断库存是否充足
@@ -26,5 +33,8 @@ redis.call('incrby', stockKey, -1)
 -- 2.4. 将当前用户保存到已下单集合中
 redis.call('sadd', orderKey, userId)
 
--- 3. 返回0代表成功抢到资格
+-- 2.5. 新加：发送消息到队列中：XADD stream.orders * userId {userId} voucherId {voucherId} id {orderId}
+redis.call('xadd', streamKey, '*', 'userId', userId, 'voucherId', voucherId, 'id', orderId)
+
+-- 3. 返回0代表成功抢到资格并且成功放入队列
 return 0

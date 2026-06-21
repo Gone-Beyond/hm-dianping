@@ -1,9 +1,12 @@
 package com.hmdp.service.impl;
 
+import com.hmdp.dto.Result;
 import com.hmdp.entity.Blog;
+import com.hmdp.entity.User;
 import com.hmdp.mapper.BlogMapper;
 import com.hmdp.service.IBlogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.hmdp.service.IUserService;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,4 +20,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements IBlogService {
 
+    private final IUserService userService;
+
+    public BlogServiceImpl(IUserService userService) {
+        this.userService = userService;
+    }
+
+    @Override
+    public Result queryBlogById(Long id) {
+
+        Blog blog = getById(id);
+
+        if (blog == null) {
+            return Result.fail("笔记不存在");
+        }
+
+        User user = userService.getById(blog.getUserId());
+
+        blog.setName(user.getNickName());
+        blog.setIcon(user.getIcon());
+
+        return Result.ok(blog);
+    }
 }
