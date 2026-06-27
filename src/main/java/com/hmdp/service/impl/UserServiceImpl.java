@@ -15,18 +15,24 @@ import com.hmdp.service.IUserService;
 import com.hmdp.utils.RedisConstants;
 import com.hmdp.utils.RegexUtils;
 import com.hmdp.utils.SystemConstants;
+import com.hmdp.utils.UserHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.BitFieldSubCommands;
+import org.springframework.data.redis.connection.ReactiveStringCommands;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.hmdp.utils.RedisConstants.LOGIN_CODE_KEY;
-import static com.hmdp.utils.RedisConstants.LOGIN_USER_KEY;
+import static com.hmdp.utils.RedisConstants.*;
 
 /**
  * <p>
@@ -141,5 +147,83 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
 
         return Result.ok(token);
+    }
+
+    @Override
+    public Result sign() {
+        // 1. 获取当前用户
+
+        Long userId = UserHolder.getUser().getId();
+
+        // 2. 获取日期
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // 3. 拼接 Key
+
+        String key = USER_SIGN_KEY + userId + ":" + now.format(DateTimeFormatter.ofPattern("yyyyMM"));
+
+
+        // 4. 算出今天是本月第几天（offset）
+
+        int dayOfMonth = now.getDayOfMonth();
+
+        // 5. SETBIT key offset 1
+
+        stringRedisTemplate.opsForValue().setBit(key, dayOfMonth - 1, true);
+
+        return Result.ok();
+    }
+
+    @Override
+    public Result signCount() {
+        // 1. 获取当前用户
+
+        Long userId = UserHolder.getUser().getId();
+
+        // 2. 获取日期
+
+        LocalDateTime now = LocalDateTime.now();
+
+        // 3. 拼接 Key
+
+        String key = USER_SIGN_KEY + userId + ":" + now.format(DateTimeFormatter.ofPattern("yyyyMM"));
+
+        // 4. 算出今天是本月第几天（offset）
+
+        int dayOfMonth = now.getDayOfMonth();
+
+        List<Long> results = stringRedisTemplate.opsForValue()
+                .bitField(
+                        key,
+                        BitFieldSubCommands.create()
+                                .get(BitFieldSubCommands.BitFieldType.unsigned(dayOfMonth))
+                                .valueAt(0)
+                );
+
+
+        if (results == null || results.isEmpty()) {
+            return Result.ok(0);
+        }
+
+
+        Long num = results.get(0);
+
+        if (num == null || num == 0) {
+            return Result.ok(0);
+        }
+
+        int count = 0;
+
+        while (true) {
+            if ((num & 1) == 0) {
+                break;
+            }
+            count++;
+
+            num >>>= 1;
+        }
+
+        return Result.ok(count);
     }
 }

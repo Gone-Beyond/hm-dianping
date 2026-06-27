@@ -61,6 +61,32 @@ class HmDianPingApplicationTests {
 
 
 
+    @Test
+    void testHyperLogLog() {
+
+        String key = "hll:test";
+
+        String[] users = new String[1000];
+
+        for (int i = 0; i < 1000000; i++) {
+
+            users[i % 1000] = "user_" + i;
+
+            if (i % 1000 == 999) {
+                stringRedisTemplate.opsForHyperLogLog().add(key, users);
+            }
+
+        }
+
+
+        Long count = stringRedisTemplate.opsForHyperLogLog().size(key);
+
+        System.out.println("HyperLogLog统计结果："+ count);
+
+    }
+
+
+
 
 
 
