@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
- * @author 铏庡摜
+ * @author 虎哥
  * @since 2021-12-24
  */
 @Data
@@ -28,58 +28,58 @@ public class UserInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 涓婚敭锛岀敤鎴穒d
+     * 主键，用户id
      */
     @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
 
     /**
-     * 鍩庡競鍚嶇О
+     * 城市名称
      */
     private String city;
 
     /**
-     * 涓汉浠嬬粛锛屼笉瑕佽秴杩?28涓瓧绗?
+     * 个人介绍，不要超过128个字符
      */
     private String introduce;
 
     /**
-     * 绮変笣鏁伴噺
+     * 粉丝数量
      */
     private Integer fans;
 
     /**
-     * 鍏虫敞鐨勪汉鐨勬暟閲?
+     * 关注的人的数量
      */
     private Integer followee;
 
     /**
-     * 鎬у埆锛?锛氱敺锛?锛氬コ
+     * 性别，0：男，1：女
      */
     private Boolean gender;
 
     /**
-     * 鐢熸棩
+     * 生日
      */
     private LocalDate birthday;
 
     /**
-     * 绉垎
+     * 积分
      */
     private Integer credits;
 
     /**
-     * 浼氬憳绾у埆锛?~9绾?0浠ｈ〃鏈紑閫氫細鍛?
+     * 会员级别，0~9级,0代表未开通会员
      */
     private Boolean level;
 
     /**
-     * 鍒涘缓鏃堕棿
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 鏇存柊鏃堕棿
+     * 更新时间
      */
     private LocalDateTime updateTime;
 

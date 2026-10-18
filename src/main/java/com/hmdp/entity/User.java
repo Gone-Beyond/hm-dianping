@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
- * @author 铏庡摜
+ * @author 虎哥
  * @since 2021-12-22
  */
 @Data
@@ -27,38 +27,38 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 涓婚敭
+     * 主键
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 鎵嬫満鍙风爜
+     * 手机号码
      */
     private String phone;
 
     /**
-     * 瀵嗙爜锛屽姞瀵嗗瓨鍌?
+     * 密码，加密存储
      */
     private String password;
 
     /**
-     * 鏄电О锛岄粯璁ゆ槸闅忔満瀛楃
+     * 昵称，默认是随机字符
      */
     private String nickName;
 
     /**
-     * 鐢ㄦ埛澶村儚
+     * 人物头像
      */
     private String icon = "";
 
     /**
-     * 鍒涘缓鏃堕棿
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 鏇存柊鏃堕棿
+     * 更新时间
      */
     private LocalDateTime updateTime;
 

@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
- * @author 铏庡摜
+ * @author 虎哥
  * @since 2021-12-22
  */
 @Data
@@ -28,66 +28,66 @@ public class Blog implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 涓婚敭
+     * 主键
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
     /**
-     * 鍟嗘埛id
+     * 商户id
      */
     private Long shopId;
     /**
-     * 鐢ㄦ埛id
+     * 用户id
      */
     private Long userId;
     /**
-     * 鐢ㄦ埛鍥炬爣
+     * 用户图标
      */
     @TableField(exist = false)
     private String icon;
     /**
-     * 鐢ㄦ埛濮撳悕
+     * 用户姓名
      */
     @TableField(exist = false)
     private String name;
     /**
-     * 鏄惁鐐硅禐杩囦簡
+     * 是否点赞过了
      */
     @TableField(exist = false)
     private Boolean isLike;
 
     /**
-     * 鏍囬
+     * 标题
      */
     private String title;
 
     /**
-     * 鎺㈠簵鐨勭収鐗囷紝鏈€澶?寮狅紝澶氬紶浠?,"闅斿紑
+     * 探店的照片，最多9张，多张以","隔开
      */
     private String images;
 
     /**
-     * 鎺㈠簵鐨勬枃瀛楁弿杩?
+     * 探店的文字描述
      */
     private String content;
 
     /**
-     * 鐐硅禐鏁伴噺
+     * 点赞数量
      */
     private Integer liked;
 
     /**
-     * 璇勮鏁伴噺
+     * 评论数量
      */
     private Integer comments;
 
     /**
-     * 鍒涘缓鏃堕棿
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 鏇存柊鏃堕棿
+     * 更新时间
      */
     private LocalDateTime updateTime;
 

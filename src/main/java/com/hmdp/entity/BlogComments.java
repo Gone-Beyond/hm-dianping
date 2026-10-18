@@ -1,6 +1,7 @@
 package com.hmdp.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -12,10 +13,10 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
- * @author 铏庡摜
+ * @author 虎哥
  * @since 2021-12-22
  */
 @Data
@@ -27,53 +28,59 @@ public class BlogComments implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 涓婚敭
+     * 主键
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 鐢ㄦ埛id
+     * 用户id
      */
     private Long userId;
 
     /**
-     * 鎺㈠簵id
+     * 探店id
      */
     private Long blogId;
 
     /**
-     * 鍏宠仈鐨?绾ц瘎璁篿d锛屽鏋滄槸涓€绾ц瘎璁猴紝鍒欏€间负0
+     * 关联的1级评论id，如果是一级评论，则值为0
      */
     private Long parentId;
 
     /**
-     * 鍥炲鐨勮瘎璁篿d
+     * 回复的评论id
      */
     private Long answerId;
 
     /**
-     * 鍥炲鐨勫唴瀹?
+     * 回复的内容
      */
     private String content;
 
     /**
-     * 鐐硅禐鏁?
+     * 点赞数
      */
     private Integer liked;
 
     /**
-     * 鐘舵€侊紝0锛氭甯革紝1锛氳涓炬姤锛?锛氱姝㈡煡鐪?
+     * 状态，0：正常，1：被举报，2：禁止查看
      */
-    private Boolean status;
+    private Integer status;
+
+    @TableField(exist = false)
+    private String name;
+
+    @TableField(exist = false)
+    private String icon;
 
     /**
-     * 鍒涘缓鏃堕棿
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 鏇存柊鏃堕棿
+     * 更新时间
      */
     private LocalDateTime updateTime;
 

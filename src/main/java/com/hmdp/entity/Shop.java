@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- *
+ * 
  * </p>
  *
- * @author 铏庡摜
+ * @author 虎哥
  * @since 2021-12-22
  */
 @Data
@@ -28,78 +28,78 @@ public class Shop implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 涓婚敭
+     * 主键
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     /**
-     * 鍟嗛摵鍚嶇О
+     * 商铺名称
      */
     private String name;
 
     /**
-     * 鍟嗛摵绫诲瀷鐨刬d
+     * 商铺类型的id
      */
     private Long typeId;
 
     /**
-     * 鍟嗛摵鍥剧墖锛屽涓浘鐗囦互','闅斿紑
+     * 商铺图片，多个图片以','隔开
      */
     private String images;
 
     /**
-     * 鍟嗗湀锛屼緥濡傞檰瀹跺槾
+     * 商圈，例如陆家嘴
      */
     private String area;
 
     /**
-     * 鍦板潃
+     * 地址
      */
     private String address;
 
     /**
-     * 缁忓害
+     * 经度
      */
     private Double x;
 
     /**
-     * 缁村害
+     * 纬度
      */
     private Double y;
 
     /**
-     * 鍧囦环锛屽彇鏁存暟
+     * 均价，取整数
      */
     private Long avgPrice;
 
     /**
-     * 閿€閲?
+     * 销量
      */
     private Integer sold;
 
     /**
-     * 璇勮鏁伴噺
+     * 评论数量
      */
     private Integer comments;
 
     /**
-     * 璇勫垎锛?~5鍒嗭紝涔?0淇濆瓨锛岄伩鍏嶅皬鏁?
+     * 评分，1~5分，乘10保存，避免小数
      */
     private Integer score;
 
     /**
-     * 钀ヤ笟鏃堕棿锛屼緥濡?10:00-22:00
+     * 营业时间，例如 10:00-22:00
      */
     private String openHours;
 
     /**
-     * 鍒涘缓鏃堕棿
+     * 创建时间
      */
     private LocalDateTime createTime;
 
     /**
-     * 鏇存柊鏃堕棿
+     * 更新时间
      */
     private LocalDateTime updateTime;
 
