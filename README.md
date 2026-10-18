@@ -41,5 +41,3 @@
 ## 验证说明
 
 新增验证代码位于 `BlogCommentsServiceTest` 和 `UserLogoutTest`，分别覆盖评论数据库事务与登录拦截器链路；评论验证使用独立 H2 内存数据库。既有 `HmDianPingApplicationTests` 含本地数据库与 Redis 数据写入实验，执行前请确认连接环境。
-
-本次交付已完成主体代码编译；按要求停止后续测试，新增验证代码修正后未复跑，也未完成真实接口联调。
